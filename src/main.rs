@@ -53,7 +53,7 @@ fn main() {
     }
 
     x = 0.0;
-    while x <operator_after.len() as f64  { //Multiplication and division
+    while x <operator_after.len() as f64  { //Addition and Subtraction
         let i = x as usize;
         if operator_after[i]=='+'{
             terms_float[i] = terms_float[i]+terms_float[i+1];
