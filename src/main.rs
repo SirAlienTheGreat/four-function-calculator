@@ -10,7 +10,7 @@ fn calculate(label:&mut fltk::frame::Frame) {
     input = input.replace("\n",&"".to_string());
     input = input.replace("-",&"+-".to_string());
 
-    let operators = "+-*/";
+    let operators = "+-*/^";
     let mut terms_string:Vec<String>= Vec::new();
     let mut terms_float:Vec<f64>= Vec::new();
     let mut operator_after:Vec<char>= Vec::new();
@@ -35,8 +35,20 @@ fn calculate(label:&mut fltk::frame::Frame) {
         let x: f64 = i.parse().unwrap();
         terms_float.push(x);
     }
-
+    
     let mut x:f64 = 0.0;
+    while x <operator_after.len() as f64  { //Exponents
+        let i = x as usize;
+        if operator_after[i]=='^'{
+            terms_float[i] = terms_float[i].powf(terms_float[i+1]);
+            terms_float.remove(i+1);
+            operator_after.remove(i);
+        }else{
+            x += 1.0;
+        }
+    }
+
+    x = 0.0;
     while x <operator_after.len() as f64  { //Multiplication and division
         let i = x as usize;
         if operator_after[i]=='*'{
@@ -90,7 +102,7 @@ fn backspace(label:&mut fltk::frame::Frame){
 }
 
 fn main() {
-    let equation = "2+2+2+2".to_string();
+    let equation = "".to_string();
 
     //window variables
     let text_box_size = 70;
@@ -102,7 +114,7 @@ fn main() {
     let app = app::App::default()
         .with_scheme(app::Scheme::Gtk);
 
-    let mut windowobj = Window::new(400,0,6*button_size+7*buffer,3*button_size+4*buffer+text_box_size,"Calculator");
+    let mut windowobj = Window::new(400,0,7*button_size+8*buffer,3*button_size+4*buffer+text_box_size,"Calculator");
 
     let _frame = Frame::default()
         .center_of(&windowobj)
@@ -234,14 +246,41 @@ fn main() {
     let mut butbackspace = Button::default()
         .with_size(button_size,button_size)
         .with_pos(buffer*5+button_size*4,text_box_size+buffer*3+button_size*2)
-        .with_label("<");
+        .with_label("DEL");
     butbackspace.set_callback({let mut text_label = text_label.clone(); move |_|{
         backspace(&mut text_label)}});
     butbackspace.set_label_size(button_font_size);
 
+    let mut butclear = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(6*buffer+5*button_size,buffer+text_box_size)
+        .with_label("Clear");
+    butclear.set_callback({let mut text_label = text_label.clone();
+        move |_|{
+            text_label.set_label(&"".to_string());
+            text_label.set_label_size(45);
+        }
+    });
+
+    let mut butdecimal = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*6+button_size*5,text_box_size+buffer*2+button_size)
+        .with_label(".");
+    butdecimal.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_to_text('.',&mut text_label)}});
+    butdecimal.set_label_size(button_font_size);
+
+    let mut butpower = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*6+button_size*5,text_box_size+buffer*3+button_size*2)
+        .with_label("^");
+    butpower.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_to_text('^',&mut text_label)}});
+    butpower.set_label_size(button_font_size);
+
     let mut butequals = Button::default()
         .with_size(button_size,button_size*3+buffer*2)
-        .with_pos(buffer*6+button_size*5,text_box_size+buffer)
+        .with_pos(buffer*7+button_size*6,text_box_size+buffer)
         .with_label("=");
     butequals.set_callback({let mut text_label = text_label.clone(); move |_| calculate(&mut text_label) });
     butequals.set_label_size(button_font_size);
