@@ -9,8 +9,12 @@ fn calculate(label:&mut fltk::frame::Frame) {
     input = input.replace(" ",&"".to_string());
     input = input.replace("\n",&"".to_string());
     input = input.replace("-",&"+-".to_string());
+    input = input.replace("++",&"+".to_string());
+    input = input.replace("^+-",&"^-".to_string());
 
-    let operators = "+-*/^";
+    
+
+    let operators = "+*/^";
     let mut terms_string:Vec<String>= Vec::new();
     let mut terms_float:Vec<f64>= Vec::new();
     let mut operator_after:Vec<char>= Vec::new();
@@ -30,6 +34,8 @@ fn calculate(label:&mut fltk::frame::Frame) {
             terms_string[key].push(*&i);
         }
     }
+
+    println!("{:?}",terms_string);
 
     for i in &terms_string{ //convert strings to float
         let x: f64 = i.parse().unwrap();
@@ -87,18 +93,24 @@ fn add_to_text(character:char, label:&mut fltk::frame::Frame){
     let mut text =label.label().parse::<String>().unwrap();
     text.push(character);
     label.set_label(&text);
-    if text.len()>=9 &&text.len()<12 {
-        label.set_label_size(35);
-    }else if text.len() >= 12{
-        label.set_label_size(30);
+
+    let mut length = text.len().clone() as f64;
+    if length == 0.0{
+        length = 1.0;
     }
+    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
 }
 
 fn backspace(label:&mut fltk::frame::Frame){
     let mut text =label.label().parse::<String>().unwrap();
     text.pop();
     label.set_label(&text);
-    label.set_label_size(45);
+    
+    let mut length = text.len().clone() as f64;
+    if length == 0.0{
+        length = 1.0;
+    }
+    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
 }
 
 fn main() {
@@ -114,7 +126,8 @@ fn main() {
     let app = app::App::default()
         .with_scheme(app::Scheme::Gtk);
 
-    let mut windowobj = Window::new(400,0,7*button_size+8*buffer,3*button_size+4*buffer+text_box_size,"Calculator");
+    let mut windowobj = Window::new(400,0,7*button_size+8*buffer,
+                                    3*button_size+4*buffer+text_box_size,"Calculator");
 
     let _frame = Frame::default()
         .center_of(&windowobj)
@@ -282,7 +295,10 @@ fn main() {
         .with_size(button_size,button_size*3+buffer*2)
         .with_pos(buffer*7+button_size*6,text_box_size+buffer)
         .with_label("=");
-    butequals.set_callback({let mut text_label = text_label.clone(); move |_| calculate(&mut text_label) });
+    butequals.set_callback({
+        let mut text_label = text_label.clone(); 
+        move |_| calculate(&mut text_label) 
+    });
     butequals.set_label_size(button_font_size);
 
     windowobj.make_resizable(true);
