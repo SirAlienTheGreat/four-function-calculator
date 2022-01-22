@@ -1,0 +1,115 @@
+pub fn calculate(input:&String) -> String{
+    println!("Calculating: {}",input);
+    
+    //Parentheses stuff
+    let input_chars = &input.chars().collect::<Vec<_>>();
+    let mut stage = 1;
+    let mut parentheses_to_ignore = 0;
+    let mut first_parentheses_seen = false;
+
+    let mut parentheses_string = "".to_string();
+    let mut nonparentheses_string = "".to_string();
+
+    for i in 0..input.len(){
+        if input_chars[i] == '('{
+            if !first_parentheses_seen{
+                first_parentheses_seen = true;
+                stage = 2;
+            } else{
+                parentheses_to_ignore+=1;
+                parentheses_string.push(input_chars[i]);
+            }
+        } else if input_chars[i] == ')' && stage == 2{
+            if parentheses_to_ignore == 0 {
+                nonparentheses_string = [nonparentheses_string, calculate(&parentheses_string)].join("");
+                parentheses_string = "".to_string();
+                stage = 1; 
+            } else{
+                parentheses_to_ignore+=-1;
+                parentheses_string.push(input_chars[i]);
+            }
+        } else if stage == 2{
+            parentheses_string.push(input_chars[i]);
+        } else{
+            nonparentheses_string.push(input_chars[i]);
+        }
+    }
+    
+    let inputo = &nonparentheses_string;
+    
+    //Actual Calculation
+    let operators = "+*/^";
+    let mut terms_string:Vec<String>= Vec::new();
+    let mut terms_float:Vec<f64>= Vec::new();
+    let mut operator_after:Vec<char>= Vec::new();
+    let mut key = 0;
+
+    // IE 4+9 would be converted to:
+        //  terms_float: [4,9]
+        //operator_after [+]
+
+    for i in inputo.chars() { //every character
+        if operators.contains(i){ //if i is an operator
+            operator_after.push(*&i);
+            key+=1;
+        } else if terms_string.len()<=key{ //if i is the first character in the term
+            terms_string.push(i.to_string());
+        } else{ //if i the second (or later) character in the term
+            terms_string[key].push(*&i);
+        }
+    }
+
+    println!("{:?}",terms_string);
+
+    for i in &terms_string{ //convert strings to float
+        let y = i.replace("(","").replace(")","");
+        let x: f64 = y.parse().unwrap();
+        terms_float.push(x);
+    }
+    
+    let mut x:f64 = 0.0;
+    while x <operator_after.len() as f64  { //Exponents
+        let i = x as usize;
+        if operator_after[i]=='^'{
+            terms_float[i] = terms_float[i].powf(terms_float[i+1]);
+            terms_float.remove(i+1);
+            operator_after.remove(i);
+        }else{
+            x += 1.0;
+        }
+    }
+
+    x = 0.0;
+    while x <(terms_float.len()-1) as f64  { //Multiplication and division
+        let i = x as usize;
+        if operator_after[i]=='*'{
+            terms_float[i] = terms_float[i]*terms_float[i+1];
+            terms_float.remove(i+1);
+            operator_after.remove(i);
+        }else if operator_after[i]=='/' {
+            terms_float[i] = terms_float[i] / terms_float[i + 1];
+            terms_float.remove(i + 1);
+            operator_after.remove(i);
+        } else{
+            x += 1.0;
+        }
+    }
+
+    x = 0.0;
+    while x <operator_after.len() as f64  { //Addition and Subtraction
+        let i = x as usize;
+        if operator_after[i]=='+'{
+            terms_float[i] = terms_float[i]+terms_float[i+1];
+            terms_float.remove(i+1);
+            operator_after.remove(i);
+        }else if operator_after[i]=='-'{
+            terms_float[i] = terms_float[i]-terms_float[i+1];
+            terms_float.remove(i+1);
+            operator_after.remove(i);
+        }else{
+            x += 1.0;
+        }
+    }
+    let output = terms_float[0];
+    return output.to_string(); 
+}
