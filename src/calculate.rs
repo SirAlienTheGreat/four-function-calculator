@@ -66,11 +66,16 @@ pub fn calculate(input:&String) -> String{
 
     println!("{:?}",terms_string);
 
-    for i in &terms_string{ //convert strings to float
+    for i in &terms_string{ //For every term
+        //convert strings to float
         //intercept trig functions
-        if i.len()>=4{ //if term is long enough to be a trig function
+        if i.len()>=4{ //if term is long enough to be a non-inverse trig function
             let i_chars = &i.chars().collect::<Vec<_>>();
-            if i_chars[0] == 's' && i_chars[1] == 'i' && i_chars[2] == 'n'{
+
+            if i_chars[0] == 'a' && i_chars[1] == 's' && i_chars[2] == 'i'&& i_chars[3] == 'n'{ //if term is long enough to be an inverse trig function
+                let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y).asin()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
+            } else if i_chars[0] == 's' && i_chars[1] == 'i' && i_chars[2] == 'n'{
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push(((y*std::f64::consts::PI/180.0).sin()*10000.0).round()/10000.0);
             } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 's'{
@@ -100,7 +105,7 @@ pub fn calculate(input:&String) -> String{
         }
     }
 
-    
+    println!("{:?}",terms_float);    
     
     let mut x:f64 = 0.0;
     while x <operator_after.len() as f64  { //Exponents

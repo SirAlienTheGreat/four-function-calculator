@@ -75,7 +75,7 @@ fn backspace(label:&mut fltk::frame::Frame){
 }
 
 fn main() { 
-    let equation = "csc30".to_string();
+    let equation = "asin0.5".to_string();
 
     //window variables
     let text_box_size = 70;
@@ -260,11 +260,27 @@ fn main() {
 
     let mut butcsc = Button::default()
         .with_size(button_size,button_size)
-        .with_pos(buffer*3+button_size*2,text_box_size+buffer*4+button_size*3)
+        .with_pos(buffer*4+button_size*3,text_box_size+buffer*4+button_size*3)
         .with_label("csc");
     butcsc.set_callback({let mut text_label = text_label.clone(); move |_|{
         add_string_to_text("csc".to_string(),&mut text_label)}});
     butcsc.set_label_size(button_font_size);
+
+    let mut butsec = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*5+button_size*4,text_box_size+buffer*4+button_size*3)
+        .with_label("sec");
+    butsec.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("sec".to_string(),&mut text_label)}});
+    butsec.set_label_size(button_font_size);
+
+    let mut butcot = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*6+button_size*5,text_box_size+buffer*4+button_size*3)
+        .with_label("cot");
+    butcot.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("cot".to_string(),&mut text_label)}});
+    butcot.set_label_size(button_font_size);
     
 
     //Parentheses buttons
