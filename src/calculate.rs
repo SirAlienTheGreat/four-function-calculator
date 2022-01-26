@@ -1,39 +1,44 @@
+use std::f64;
+
 pub fn calculate(input:&String) -> String{
     println!("Calculating: {}",input);
     
     //Parentheses stuff
-    let input_chars = &input.chars().collect::<Vec<_>>();
+    //let input_chars = &input.chars().collect::<Vec<_>>();
     let mut stage = 1;
     let mut parentheses_to_ignore = 0;
     let mut first_parentheses_seen = false;
 
     let mut parentheses_string = "".to_string();
-    let mut nonparentheses_string = "".to_string();
+    let mut nonparentheses_string = input.clone();
+    
+    let input_chars = &nonparentheses_string.chars().collect::<Vec<_>>();
 
-    for i in 0..input.len(){
+    for i in 0..input_chars.len(){ // Every character
         if input_chars[i] == '('{
-            if !first_parentheses_seen{
+            if !first_parentheses_seen{ // Big parentheses
                 first_parentheses_seen = true;
+                //parentheses_string.push(input_chars[i]);
                 stage = 2;
-            } else{
+            } else{ //Nested parentheses
                 parentheses_to_ignore+=1;
                 parentheses_string.push(input_chars[i]);
             }
         } else if input_chars[i] == ')' && stage == 2{
-            if parentheses_to_ignore == 0 {
-                nonparentheses_string = [nonparentheses_string, calculate(&parentheses_string)].join("");
+            if parentheses_to_ignore == 0 { // Big parentheses
+                nonparentheses_string = nonparentheses_string.replace(&["(",&parentheses_string as &str,")"].join(""),&calculate(&parentheses_string));
                 parentheses_string = "".to_string();
+                first_parentheses_seen = false;
                 stage = 1; 
-            } else{
+            } else{ //Nested parentheses
                 parentheses_to_ignore+=-1;
                 parentheses_string.push(input_chars[i]);
             }
-        } else if stage == 2{
+        } else if stage == 2{ //Things inside big parentheses
             parentheses_string.push(input_chars[i]);
-        } else{
-            nonparentheses_string.push(input_chars[i]);
         }
     }
+    
     
     let inputo = &nonparentheses_string;
     
@@ -62,10 +67,40 @@ pub fn calculate(input:&String) -> String{
     println!("{:?}",terms_string);
 
     for i in &terms_string{ //convert strings to float
-        let y = i.replace("(","").replace(")","");
-        let x: f64 = y.parse().unwrap();
-        terms_float.push(x);
+        //intercept trig functions
+        if i.len()>=4{ //if term is long enough to be a trig function
+            let i_chars = &i.chars().collect::<Vec<_>>();
+            if i_chars[0] == 's' && i_chars[1] == 'i' && i_chars[2] == 'n'{
+                let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y*std::f64::consts::PI/180.0).sin()*10000.0).round()/10000.0);
+            } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 's'{
+                let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y*std::f64::consts::PI/180.0).cos()*10000.0).round()/10000.0);
+            } else if i_chars[0] == 't' && i_chars[1] == 'a' && i_chars[2] == 'n'{
+                let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y*std::f64::consts::PI/180.0).tan()*10000.0).round()/10000.0);
+            } else if i_chars[0] == 'c' && i_chars[1] == 's' && i_chars[2] == 'c'{
+                let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push((((y*std::f64::consts::PI/180.0).sin()).powf(-1.0)*10000.0).round()/10000.0);
+            } else if i_chars[0] == 's' && i_chars[1] == 'e' && i_chars[2] == 'c'{
+                let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push((((y*std::f64::consts::PI/180.0).cos()).powf(-1.0)*10000.0).round()/10000.0);
+            } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 't'{
+                let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push((((y*std::f64::consts::PI/180.0).tan()).powf(-1.0)*10000.0).round()/10000.0);
+            }else{
+                let y = i.replace("(","").replace(")","");
+                let x: f64 = y.parse().unwrap();
+                terms_float.push(x);
+            }
+        } else{
+            let y = i.replace("(","").replace(")","");
+            let x: f64 = y.parse().unwrap();
+            terms_float.push(x);
+        }
     }
+
+    
     
     let mut x:f64 = 0.0;
     while x <operator_after.len() as f64  { //Exponents
@@ -96,7 +131,7 @@ pub fn calculate(input:&String) -> String{
     }
 
     x = 0.0;
-    while x <operator_after.len() as f64  { //Addition and Subtraction
+    while x <((terms_float.len() as f64)-1.0)  { //Addition and Subtraction
         let i = x as usize;
         if operator_after[i]=='+'{
             terms_float[i] = terms_float[i]+terms_float[i+1];

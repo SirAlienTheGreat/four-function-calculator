@@ -50,6 +50,18 @@ fn add_to_text(character:char, label:&mut fltk::frame::Frame){
     label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
 }
 
+fn add_string_to_text(string_in:String, label:&mut fltk::frame::Frame){
+    let mut text =label.label().parse::<String>().unwrap();
+    text = [text,string_in].join("");
+    label.set_label(&text);
+
+    let mut length = text.len().clone() as f64;
+    if length == 0.0{
+        length = 1.0;
+    }
+    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
+}
+
 fn backspace(label:&mut fltk::frame::Frame){
     let mut text =label.label().parse::<String>().unwrap();
     text.pop();
@@ -62,8 +74,8 @@ fn backspace(label:&mut fltk::frame::Frame){
     label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
 }
 
-fn main() {
-    let equation = "".to_string();
+fn main() { 
+    let equation = "csc30".to_string();
 
     //window variables
     let text_box_size = 70;
@@ -76,7 +88,7 @@ fn main() {
         .with_scheme(app::Scheme::Gtk);
 
     let mut windowobj = Window::new(400,0,8*button_size+9*buffer,
-                                    3*button_size+4*buffer+text_box_size,"Calculator");
+                                    4*button_size+5*buffer+text_box_size,"Calculator");
 
     let _frame = Frame::default()
         .center_of(&windowobj)
@@ -172,7 +184,7 @@ fn main() {
         add_to_text('0',&mut text_label)}});
     but0.set_label_size(button_font_size);
 
-    // Bottom row buttons (Symbols)
+    // 3rd row buttons (Symbols)
     let mut butplus = Button::default()
         .with_size(button_size,button_size)
         .with_pos(buffer,text_box_size+buffer*3+button_size*2)
@@ -204,6 +216,14 @@ fn main() {
     butdivide.set_callback({let mut text_label = text_label.clone(); move |_|{
         add_to_text('/',&mut text_label)}});
     butdivide.set_label_size(button_font_size);
+    
+    let mut butpower = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*5+button_size*4,text_box_size+buffer*3+button_size*2)
+        .with_label("^");
+    butpower.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_to_text('^',&mut text_label)}});
+    butpower.set_label_size(button_font_size);
 
     let mut butbackspace = Button::default()
         .with_size(button_size,button_size)
@@ -212,7 +232,41 @@ fn main() {
     butbackspace.set_callback({let mut text_label = text_label.clone(); move |_|{
         backspace(&mut text_label)}});
     butbackspace.set_label_size(button_font_size);
+
+    // Trig function buttons
+    let mut butsin = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer,text_box_size+buffer*4+button_size*3)
+        .with_label("sin");
+    butsin.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("sin".to_string(),&mut text_label)}});
+    butsin.set_label_size(button_font_size);
+
+    let mut butcos = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*2+button_size,text_box_size+buffer*4+button_size*3)
+        .with_label("cos");
+    butcos.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("cos".to_string(),&mut text_label)}});
+    butcos.set_label_size(button_font_size);
+
+    let mut buttan = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*3+button_size*2,text_box_size+buffer*4+button_size*3)
+        .with_label("tan");
+    buttan.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("tan".to_string(),&mut text_label)}});
+    buttan.set_label_size(button_font_size);
+
+    let mut butcsc = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*3+button_size*2,text_box_size+buffer*4+button_size*3)
+        .with_label("csc");
+    butcsc.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("csc".to_string(),&mut text_label)}});
+    butcsc.set_label_size(button_font_size);
     
+
     //Parentheses buttons
     let mut butopenparen = Button::default()
         .with_size(button_size,button_size)
@@ -250,16 +304,8 @@ fn main() {
         add_to_text('.',&mut text_label)}});
     butdecimal.set_label_size(button_font_size);
 
-    let mut butpower = Button::default()
-        .with_size(button_size,button_size)
-        .with_pos(buffer*5+button_size*4,text_box_size+buffer*3+button_size*2)
-        .with_label("^");
-    butpower.set_callback({let mut text_label = text_label.clone(); move |_|{
-        add_to_text('^',&mut text_label)}});
-    butpower.set_label_size(button_font_size);
-
     let mut butequals = Button::default()
-        .with_size(button_size,button_size*3+buffer*2)
+        .with_size(button_size,button_size*4+buffer*3)
         .with_pos(buffer*8+button_size*7,text_box_size+buffer)
         .with_label("=");
     butequals.set_callback({
