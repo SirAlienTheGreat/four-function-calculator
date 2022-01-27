@@ -69,28 +69,45 @@ pub fn calculate(input:&String) -> String{
     for i in &terms_string{ //For every term
         //convert strings to float
         //intercept trig functions
-        if i.len()>=4{ //if term is long enough to be a non-inverse trig function
+        if i.len()>=4{ //if term is long enough to be a trig function
             let i_chars = &i.chars().collect::<Vec<_>>();
-
-            if i_chars[0] == 'a' && i_chars[1] == 's' && i_chars[2] == 'i'&& i_chars[3] == 'n'{ //if term is long enough to be an inverse trig function
+            // Inverse trig functions
+            if i_chars[0] == 'a' && i_chars[1] == 's' && i_chars[2] == 'i'&& i_chars[3] == 'n'{ //asin
                 let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push(((y).asin()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
-            } else if i_chars[0] == 's' && i_chars[1] == 'i' && i_chars[2] == 'n'{
+            }else if i_chars[0] == 'a' && i_chars[1] == 'c' && i_chars[2] == 'o'&& i_chars[3] == 's'{ //acos
+                let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y).acos()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
+            } else if i_chars[0] == 'a' && i_chars[1] == 't' && i_chars[2] == 'a'&& i_chars[3] == 'n'{//atan
+                let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y).atan()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
+            } else if i_chars[0] == 'a' && i_chars[1] == 'c' && i_chars[2] == 's'&& i_chars[3] == 'c'{ //acsc
+                let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y.powf(-1.0)).asin()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
+            }else if i_chars[0] == 'a' && i_chars[1] == 's' && i_chars[2] == 'e'&& i_chars[3] == 'c'{//asec
+                let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y.powf(-1.0)).acos()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
+            } else if i_chars[0] == 'a' && i_chars[1] == 'c' && i_chars[2] == 'o'&& i_chars[3] == 't'{//acot
+                let y:f64 = i_chars[4..].iter().collect::<String>().parse::<f64>().unwrap();
+                terms_float.push(((y.powf(-1.0)).atan()*180.0/(std::f64::consts::PI)*10000.0).round()/10000.0);
+            
+            //Trig functions
+            } else if i_chars[0] == 's' && i_chars[1] == 'i' && i_chars[2] == 'n'{//sin
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push(((y*std::f64::consts::PI/180.0).sin()*10000.0).round()/10000.0);
-            } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 's'{
+            } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 's'{//cos
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push(((y*std::f64::consts::PI/180.0).cos()*10000.0).round()/10000.0);
-            } else if i_chars[0] == 't' && i_chars[1] == 'a' && i_chars[2] == 'n'{
+            } else if i_chars[0] == 't' && i_chars[1] == 'a' && i_chars[2] == 'n'{//tan
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push(((y*std::f64::consts::PI/180.0).tan()*10000.0).round()/10000.0);
-            } else if i_chars[0] == 'c' && i_chars[1] == 's' && i_chars[2] == 'c'{
+            } else if i_chars[0] == 'c' && i_chars[1] == 's' && i_chars[2] == 'c'{//csc
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push((((y*std::f64::consts::PI/180.0).sin()).powf(-1.0)*10000.0).round()/10000.0);
-            } else if i_chars[0] == 's' && i_chars[1] == 'e' && i_chars[2] == 'c'{
+            } else if i_chars[0] == 's' && i_chars[1] == 'e' && i_chars[2] == 'c'{//sec
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push((((y*std::f64::consts::PI/180.0).cos()).powf(-1.0)*10000.0).round()/10000.0);
-            } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 't'{
+            } else if i_chars[0] == 'c' && i_chars[1] == 'o' && i_chars[2] == 't'{//cot
                 let y:f64 = i_chars[3..].iter().collect::<String>().parse::<f64>().unwrap();
                 terms_float.push((((y*std::f64::consts::PI/180.0).tan()).powf(-1.0)*10000.0).round()/10000.0);
             }else{
@@ -103,9 +120,7 @@ pub fn calculate(input:&String) -> String{
             let x: f64 = y.parse().unwrap();
             terms_float.push(x);
         }
-    }
-
-    println!("{:?}",terms_float);    
+    } 
     
     let mut x:f64 = 0.0;
     while x <operator_after.len() as f64  { //Exponents

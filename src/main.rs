@@ -14,6 +14,7 @@ fn calculator(label:&mut fltk::frame::Frame) {
     input = input.replace("-",&"+-".to_string());
     input = input.replace("++",&"+".to_string());
     input = input.replace("^+-",&"^-".to_string());
+    input = input.replace("(+-",&"(-".to_string());
 
     //make numbers before parentheses be multiplication
     input = input.replace("1(","1*(");
@@ -75,7 +76,7 @@ fn backspace(label:&mut fltk::frame::Frame){
 }
 
 fn main() { 
-    let equation = "asin0.5".to_string();
+    let equation = "".to_string();
 
     //window variables
     let text_box_size = 70;
@@ -88,7 +89,7 @@ fn main() {
         .with_scheme(app::Scheme::Gtk);
 
     let mut windowobj = Window::new(400,0,8*button_size+9*buffer,
-                                    4*button_size+5*buffer+text_box_size,"Calculator");
+                                    5*button_size+6*buffer+text_box_size,"Calculator");
 
     let _frame = Frame::default()
         .center_of(&windowobj)
@@ -281,6 +282,55 @@ fn main() {
     butcot.set_callback({let mut text_label = text_label.clone(); move |_|{
         add_string_to_text("cot".to_string(),&mut text_label)}});
     butcot.set_label_size(button_font_size);
+
+    // Inverse Trig function buttons
+    let mut butasin = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer,text_box_size+buffer*5+button_size*4)
+        .with_label("asin");
+    butasin.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("asin".to_string(),&mut text_label)}});
+    butasin.set_label_size(button_font_size);
+
+    let mut butacos = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*2+button_size,text_box_size+buffer*5+button_size*4)
+        .with_label("acos");
+    butacos.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("cos".to_string(),&mut text_label)}});
+    butacos.set_label_size(button_font_size);
+
+    let mut butatan = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*3+button_size*2,text_box_size+buffer*5+button_size*4)
+        .with_label("atan");
+    butatan.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("atan".to_string(),&mut text_label)}});
+    butatan.set_label_size(button_font_size);
+
+    let mut butacsc = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*4+button_size*3,text_box_size+buffer*5+button_size*4)
+        .with_label("acsc");
+    butacsc.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("acsc".to_string(),&mut text_label)}});
+    butacsc.set_label_size(button_font_size);
+
+    let mut butasec = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*5+button_size*4,text_box_size+buffer*5+button_size*4)
+        .with_label("asec");
+    butasec.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("asec".to_string(),&mut text_label)}});
+    butasec.set_label_size(button_font_size);
+
+    let mut butacot = Button::default()
+        .with_size(button_size,button_size)
+        .with_pos(buffer*6+button_size*5,text_box_size+buffer*5+button_size*4)
+        .with_label("acot");
+    butacot.set_callback({let mut text_label = text_label.clone(); move |_|{
+        add_string_to_text("acot".to_string(),&mut text_label)}});
+    butacot.set_label_size(button_font_size);
     
 
     //Parentheses buttons
@@ -314,14 +364,14 @@ fn main() {
 
     let mut butdecimal = Button::default()
         .with_size(button_size,button_size)
-        .with_pos(buffer*7+button_size*6,text_box_size+buffer*3+button_size*2)
+        .with_pos(buffer*6+button_size*5,text_box_size+buffer*3+button_size*2)
         .with_label(".");
     butdecimal.set_callback({let mut text_label = text_label.clone(); move |_|{
         add_to_text('.',&mut text_label)}});
     butdecimal.set_label_size(button_font_size);
 
     let mut butequals = Button::default()
-        .with_size(button_size,button_size*4+buffer*3)
+        .with_size(button_size,button_size*5+buffer*4)
         .with_pos(buffer*8+button_size*7,text_box_size+buffer)
         .with_label("=");
     butequals.set_callback({
