@@ -1,10 +1,19 @@
 use fltk::{app,prelude::*,window::Window};
 use fltk::button::Button;
 use fltk::frame::Frame;
+//use fltk::input::Input;
 mod calculate;
+fn calculate_text_size(length_in:i32) -> i32{
+    let mut length = length_in.clone();
+    if length == 0{
+        length = 1;
+    }
+    return (60.0*0.9_f64.powf(length.into())) as i32;
+}
+//println!("{}",calculate_text_size(3));
 
-fn calculator(label:&mut fltk::frame::Frame) {
-    let mut input =label.label().parse::<String>().unwrap();
+fn calculator(label:&mut fltk::input::Input) {
+    let mut input =label.value().parse::<String>().unwrap();
 
     //remove whitespace
     input = input.replace(" ",&"".to_string());
@@ -30,49 +39,33 @@ fn calculator(label:&mut fltk::frame::Frame) {
 
     let output = calculate::calculate(&input);
     
-    label.set_label(&output.to_string());
-
-    let mut length = label.label().parse::<String>().unwrap().len().clone() as f64;
-    if length == 0.0{
-        length = 1.0;
-    }
-    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
-}
-
-fn add_to_text(character:char, label:&mut fltk::frame::Frame){
-    let mut text =label.label().parse::<String>().unwrap();
-    text.push(character);
-    label.set_label(&text);
-
-    let mut length = text.len().clone() as f64;
-    if length == 0.0{
-        length = 1.0;
-    }
-    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
-}
-
-fn add_string_to_text(string_in:String, label:&mut fltk::frame::Frame){
-    let mut text =label.label().parse::<String>().unwrap();
-    text = [text,string_in].join("");
-    label.set_label(&text);
-
-    let mut length = text.len().clone() as f64;
-    if length == 0.0{
-        length = 1.0;
-    }
-    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
-}
-
-fn backspace(label:&mut fltk::frame::Frame){
-    let mut text =label.label().parse::<String>().unwrap();
-    text.pop();
-    label.set_label(&text);
+    label.set_value(&output.to_string());
     
-    let mut length = text.len().clone() as f64;
-    if length == 0.0{
-        length = 1.0;
-    }
-    label.set_label_size((60.0*0.9_f64.powf(length)) as i32);
+    label.set_text_size(calculate_text_size(label.value().parse::<String>().unwrap().len().clone() as i32));
+}
+
+fn add_to_text(character:char, label:&mut fltk::input::Input){
+    let mut text =label.value().parse::<String>().unwrap();
+    text.push(character);
+    label.set_value(&text);
+
+    label.set_text_size(calculate_text_size(label.value().parse::<String>().unwrap().len().clone() as i32));
+}
+
+fn add_string_to_text(string_in:String, label:&mut fltk::input::Input){
+    let mut text =label.value().parse::<String>().unwrap();
+    text = [text,string_in].join("");
+    label.set_value(&text);
+
+    label.set_text_size(calculate_text_size(label.value().parse::<String>().unwrap().len().clone() as i32));
+}
+
+fn backspace(label:&mut fltk::input::Input){
+    let mut text =label.value().parse::<String>().unwrap();
+    text.pop();
+    label.set_value(&text);
+    
+    label.set_text_size(calculate_text_size(label.value().parse::<String>().unwrap().len().clone() as i32));
 }
 
 fn main() { 
@@ -95,11 +88,11 @@ fn main() {
         .center_of(&windowobj)
         .size_of(&windowobj);
 
-    let mut text_label = Frame::default()
+    let mut text_label = fltk::input::Input::default()
         .with_size(250,text_box_size)
         .with_pos(buffer,buffer)
         .with_label(&equation);
-    text_label.set_label_size(45);
+    text_label.set_text_size(45);
 
 
     // Top row buttons (1-5)
@@ -357,7 +350,7 @@ fn main() {
         .with_label("Clear");
     butclear.set_callback({let mut text_label = text_label.clone();
         move |_|{
-            text_label.set_label(&"".to_string());
+            text_label.set_value(&"".to_string());
             text_label.set_label_size(45);
         }
     });
