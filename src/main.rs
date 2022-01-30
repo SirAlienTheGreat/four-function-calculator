@@ -1,14 +1,10 @@
 use fltk::{app,prelude::*,window::Window};
 use fltk::button::Button;
-use fltk::frame::Frame;
-//use fltk::input::Input;
+use fltk::enums::{Shortcut,Key};
 mod calculate;
-fn calculate_text_size(length_in:i32) -> i32{
-    let mut length = length_in.clone();
-    if length == 0{
-        length = 1;
-    }
-    return (60.0*0.9_f64.powf(length.into())) as i32;
+
+fn calculate_text_size(_length_in:i32) -> i32{
+    return 45;
 }
 //println!("{}",calculate_text_size(3));
 
@@ -84,15 +80,12 @@ fn main() {
     let mut windowobj = Window::new(400,0,8*button_size+9*buffer,
                                     5*button_size+6*buffer+text_box_size,"Calculator");
 
-    let _frame = Frame::default()
-        .center_of(&windowobj)
-        .size_of(&windowobj);
-
     let mut text_label = fltk::input::Input::default()
-        .with_size(250,text_box_size)
+        .with_size(8*button_size+7*buffer,text_box_size-buffer)
         .with_pos(buffer,buffer)
         .with_label(&equation);
     text_label.set_text_size(45);
+    text_label.set_color(windowobj.color());
 
 
     // Top row buttons (1-5)
@@ -290,7 +283,7 @@ fn main() {
         .with_pos(buffer*2+button_size,text_box_size+buffer*5+button_size*4)
         .with_label("acos");
     butacos.set_callback({let mut text_label = text_label.clone(); move |_|{
-        add_string_to_text("cos".to_string(),&mut text_label)}});
+        add_string_to_text("acos".to_string(),&mut text_label)}});
     butacos.set_label_size(button_font_size);
 
     let mut butatan = Button::default()
@@ -372,6 +365,7 @@ fn main() {
         move |_| calculator(&mut text_label) 
     });
     butequals.set_label_size(button_font_size);
+    butequals.set_shortcut(Shortcut::None | Key::Enter);
 
     windowobj.make_resizable(true);
     windowobj.end();
